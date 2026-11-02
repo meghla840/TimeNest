@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timenest</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3f5f9;--card:#fff;--ink:#0f1d2e;--mute:#66758a;--line:#e3e8ef;--acc:#1d4f7c;--acc2:#0a1f36;--onacc:#fff;--busy:#e6eaf0;--warn:#c27c0e;--ok:#2f855a;--bad:#c0392b;--soft:#e8eff8;--sh:0 8px 24px rgba(10,31,54,.10);--gold:#cfc3a8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b121b;--card:#131f2d;--ink:#e8eef5;--mute:#93a4b8;--line:#24344a;--acc:#7fb2e5;--acc2:#08131f;--onacc:#06121e;--busy:#223245;--warn:#e0a94a;--ok:#5fc68f;--bad:#ef7a6c;--soft:#192b40;--sh:0 8px 24px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#0b121b;--card:#131f2d;--ink:#e8eef5;--mute:#93a4b8;--line:#24344a;--acc:#7fb2e5;--acc2:#08131f;--onacc:#06121e;--busy:#223245;--warn:#e0a94a;--ok:#5fc68f;--bad:#ef7a6c;--soft:#192b40;--sh:0 8px 24px rgba(0,0,0,.35)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+svg{flex:none}
+.hero{background:linear-gradient(140deg,var(--acc2),#1d4f7c);color:#fff;padding:20px 16px 64px;border-radius:0 0 28px 28px}
+.hin{max-width:520px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hero small{opacity:.78;font-size:13px;display:block}
+.hero h1{font-size:21px;margin:0;font-weight:800;letter-spacing:-.3px}
+.hero .ic{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:14px;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;position:relative}
+.hero .ic b{position:absolute;top:-5px;right:-5px;background:#ff6b5b;border-radius:10px;font-size:11px;padding:1px 6px;font-weight:700}
+main{max-width:520px;margin:-42px auto 0;padding:0 14px 110px}
+.panel{background:var(--card);border-radius:20px;box-shadow:var(--sh);padding:16px;margin-bottom:14px}
+h2{font-size:16px;margin:0 0 4px;font-weight:800;letter-spacing:-.2px}
+.sub{color:var(--mute);font-size:13px;margin:0 0 6px}
+label{display:block;font-size:12.5px;color:var(--mute);margin:14px 0 5px;font-weight:600}
+input,select,textarea{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);border-color:transparent}
+.fi{position:relative}.fi>svg{position:absolute;left:13px;top:14px;color:var(--mute)}.fi input{padding-left:42px}
+.fi .eye{position:absolute;right:6px;top:5px;width:36px;height:36px;border:0;background:none;color:var(--mute);cursor:pointer;display:grid;place-items:center}
+.dbar{display:flex;gap:8px;align-items:center}
+.dbar button{flex:none;width:44px;height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;cursor:pointer}
+.step{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.step i{width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--onacc);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:13px;flex:none}
+.tl{position:relative;height:50px;border-radius:12px;background:var(--soft);overflow:hidden;margin-top:8px}
+.blk{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,var(--busy),var(--busy) 6px,transparent 6px,transparent 12px);border-left:2px solid var(--mute);cursor:pointer}
+.blk.sel{background:var(--acc);border:0;border-radius:8px;top:7px;bottom:7px;cursor:default}
+.ticks{position:relative;height:18px;margin-top:5px;font-size:11px;color:var(--mute)}
+.ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--mute);margin-top:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.two{display:flex;gap:10px}.two>*{flex:1}
+.sum{background:var(--soft);border-radius:14px;padding:12px 14px;margin-top:14px;display:flex;gap:12px;align-items:center;color:var(--acc)}
+.sum b{display:block;color:var(--ink)}.sum small{color:var(--mute)}
+.btn{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;background:var(--acc);color:var(--onacc);font:inherit;font-weight:700;cursor:pointer;display:flex;gap:8px;align-items:center;justify-content:center}
+.btn.ghost{background:var(--busy);color:var(--ink)}.btn.bad{background:var(--bad);color:#fff}.btn.sm{padding:11px;margin-top:10px}.btn.out{background:none;border:1.5px solid var(--line);color:var(--ink)}
+.card{background:var(--card);border-radius:18px;box-shadow:var(--sh);padding:14px;margin-bottom:12px;width:100%;text-align:left;border:0;color:var(--ink);font:inherit;display:block}
+button.card{cursor:pointer}
+.crow{display:flex;gap:12px;align-items:center}
+.grow{flex:1;min-width:0}.grow b{display:block}.grow small{color:var(--mute);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ini{width:42px;height:42px;border-radius:14px;background:var(--soft);color:var(--acc);display:grid;place-items:center;font-weight:800;flex:none}
+.ini.big{width:72px;height:72px;border-radius:24px;font-size:28px;margin:0 auto}
+.dbadge{width:46px;border-radius:14px;background:linear-gradient(160deg,var(--acc),var(--acc2));color:#fff;text-align:center;padding:6px 0;flex:none}
+.dbadge b{display:block;font-size:19px;line-height:1.1;font-weight:800}.dbadge small{font-size:10.5px;opacity:.85;text-transform:none}
+.chip{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.s-new{background:#fdf1dc;color:#9a6208}.s-forwarded{background:#e1ecfb;color:#255ea8}.s-approved{background:#dcf3e6;color:#1f7a49}.s-rejected,.s-returned,.s-cancelled{background:#fbe3df;color:#a3302a}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:20px 4px 10px}
+.sec h2{margin:0}.sec span{font-size:12.5px;color:var(--mute);font-weight:600}
+.dc{background:var(--card);border-radius:20px;box-shadow:var(--sh);margin-bottom:14px;overflow:hidden}
+.dch{display:flex;gap:12px;align-items:center;padding:14px;border-bottom:1px solid var(--line)}
+.dch b{display:block}.dch small{color:var(--mute)}
+.ar{display:flex;gap:12px;align-items:center;width:100%;border:0;background:none;color:var(--ink);font:inherit;text-align:left;padding:12px 14px;cursor:pointer;border-bottom:1px solid var(--line)}
+.ar:last-child{border-bottom:0}
+.tm{width:74px;flex:none;font-size:12px;font-weight:700;color:var(--acc);line-height:1.3}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:6px}
+.stat div{background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:12px 8px;text-align:center}
+.stat b{font-size:24px;display:block;color:var(--acc);line-height:1.2}.stat small{color:var(--mute);font-size:11.5px;font-weight:600}
+.empty{color:var(--mute);text-align:center;padding:26px 12px}
+.empty svg{display:block;margin:0 auto 8px;opacity:.5}
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+.nav div{display:flex;width:100%;max-width:520px}
+.nav button{flex:1;border:0;background:none;color:var(--mute);font:inherit;font-size:11.5px;font-weight:700;padding:6px;cursor:pointer;position:relative}
+.nav button svg{display:block;margin:0 auto 2px}.nav button.on{color:var(--acc)}
+.nav b{position:absolute;top:0;left:54%;background:var(--bad);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px}
+.ov{position:fixed;inset:0;background:rgba(5,20,24,.55);display:flex;align-items:flex-end;justify-content:center;z-index:9}
+.sheet{background:var(--card);width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));max-height:88%;overflow:auto}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:-8px auto 14px}
+.row{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row span:first-child{color:var(--mute)}.row span:last-child{text-align:right;font-weight:600}
+.msg{background:#fbe3df;color:#a3302a;border-radius:12px;padding:10px 12px;margin-top:12px;font-size:13.5px}
+.ok{background:#dcf3e6;color:#1f7a49}
+.err{color:var(--bad);font-size:13.5px;margin-top:10px}
+.trk{display:flex;margin-top:14px}
+.trk div{flex:1;text-align:center;font-size:11px;color:var(--mute);position:relative}
+.trk i{display:block;width:12px;height:12px;border-radius:50%;background:var(--busy);margin:0 auto 4px;position:relative;z-index:1}
+.trk div::before{content:"";position:absolute;top:5px;left:-50%;width:100%;height:2px;background:var(--busy)}
+.trk div:first-child::before{display:none}
+.trk .d i,.trk .d::before{background:var(--ok)}.trk .c i{background:var(--warn)}.trk .x i{background:var(--bad)}
+.act{border-left:2px solid var(--line);margin:14px 0 0 8px;padding-left:16px}
+.act div{position:relative;padding-bottom:12px;font-size:13.5px}.act div::before{content:"";position:absolute;left:-23px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.act small{display:block;color:var(--mute)}
+.nt{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.nt .ni{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none}
+.nt p{margin:0;font-size:14px}.nt small{color:var(--mute)}.nt.un p{font-weight:700}
+.nt.un::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--acc);margin-top:6px;flex:none}
+.nt .grow{order:1}.nt.un::after{order:2}
+.lg{min-height:100vh;
+ background:linear-gradient(160deg,var(--acc2),#1d4f7c 70%);
+ padding:46px 18px 30px;
+ display:flex;
+ flex-direction:column;
+ align-items:center}
+.lgtop{text-align:center;color:#fff;margin-bottom:22px}
+.logo{width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.16);display:grid;place-items:center;margin:0 auto 14px;border:1px solid rgba(255,255,255,.25)}
+.lgtop h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.5px}.lgtop p{margin:6px 0 0;opacity:.8;font-size:14px}
+.lgc{width:100%;max-width:420px;background:var(--card);border-radius:24px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.seg{display:flex;background:var(--bg);border-radius:14px;padding:4px;margin-bottom:6px}
+.seg button{flex:1;border:0;background:none;padding:10px;border-radius:11px;font:inherit;font-weight:700;color:var(--mute);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--acc);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.fine{color:rgba(255,255,255,.7);font-size:12.5px;text-align:center;margin-top:18px;max-width:340px}
+.cta{width:100%;border:0;border-radius:22px;padding:18px;display:flex;gap:14px;align-items:center;text-align:left;font:inherit;background:#fbf7ee;color:#0a1f36;border:1px solid #e8dfca;box-shadow:0 8px 22px rgba(10,31,54,.18);cursor:pointer;margin-bottom:14px}
+.cta b{display:block;font-size:17px;font-weight:800;color:#0a1f36}.cta small{color:#4a5a6e;font-size:12.5px;display:block}.cta>svg{color:#1d4f7c}
+.ctai{width:50px;height:50px;border-radius:16px;background:#1d4f7c;color:#fff;display:grid;place-items:center;flex:none}
+.dcl{border-left:4px solid var(--gold);display:flex;gap:12px;align-items:center}
+.back{width:auto;padding:9px 16px;margin:0 0 12px;display:inline-flex}
+.hero{background:linear-gradient(140deg,var(--acc2),#1d4f7c)}
+.urg{background:#c0392b;color:#fff}.nxt{background:linear-gradient(140deg,var(--acc2),#1d4f7c);color:#fff;border-radius:18px;padding:16px;margin-bottom:12px}.nxt small{opacity:.8}
+.loadmsg{color:var(--mute);text-align:center;padding:40px}
+</style>
+</head>
+<body>
+<div id="app">
+
+</div>
+<script>
+const P={chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/>',home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>',users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c3 0 5 2 5 5"/>',bell:'<path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21h4"/>',check:'<path d="M5 12l5 5 9-10"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',lock:'<rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',inbox:'<path d="M3 13l3-8h12l3 8v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 13h5l1 3h6l1-3h5"/>',plus:'<path d="M12 5v14M5 12h14"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/>'};
+const ic=(n,s=20)=>'<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';
+
+/* ===== Google Sheet backend (Apps Script) ===== */
+const API_URL="https://script.google.com/macros/s/AKfycbzL_Ujs7EIvpdcrFEXVDasLLEyI2MREaHAyzDqwBD5tCZrPsYp8wmiroYMmcMgI_7Wc/exec";
+let LOCAL=false;
+function makeLocalDB(){
+  const K="md-local-db";let mem={};
+  const load=()=>{try{return JSON.parse(localStorage.getItem(K))||{}}catch(e){return mem}};
+  const save=d=>{mem=d;try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}};
+  const subs=new Set(),fire=()=>subs.forEach(f=>f());
+  const rows=(col,wh)=>Object.entries(load()[col]||{}).filter(([i,d])=>!wh||d[wh[0]]===wh[1]).map(([id,data])=>({id,data:()=>data}));
+  const put=(col,id,fn)=>{const d=load();d[col]=d[col]||{};d[col][id]=fn(d[col][id]);save(d);fire()};
+  const doc=p=>{const i=p.indexOf("/"),col=p.slice(0,i),id=p.slice(i+1);return{
+    get:async()=>{const v=(load()[col]||{})[id];return{id,exists:v!=null,data:()=>v}},
+    set:async d=>put(col,id,()=>d),
+    update:async d=>put(col,id,o=>Object.assign({},o,d))}};
+  const query=(col,wh)=>({
+    where:(f,op,v)=>query(col,[f,v]),
+    add:async d=>put(col,"id"+Date.now()+Math.random().toString(36).slice(2,6),()=>d),
+    onSnapshot:cb=>{const f=()=>cb({docs:rows(col,wh)});subs.add(f);setTimeout(f,0);return()=>subs.delete(f)}});
+  const pubU=d=>d?{username:d.username,name:d.name,role:d.role}:null,acc=u=>(load().accounts||{})[u],rs=()=>Math.random().toString(36).slice(2);
+  const auth={
+    login:async(u,p)=>{const d=acc(u);if(!d||d.hash!==await sha(d.salt+p))throw new Error("BAD_LOGIN");return pubU(d)},
+    signup:async(n,u,p)=>{if(acc(u))throw new Error("TAKEN");const salt=rs(),a={username:u,name:n,role:"emp",salt,hash:await sha(salt+p)};put("accounts",u,()=>a);return pubU(a)},
+    changePw:async(u,c,n)=>{const d=acc(u);if(!d||d.hash!==await sha(d.salt+c))throw new Error("BAD_PW");const salt=rs(),hash=await sha(salt+n);put("accounts",u,o=>Object.assign({},o,{salt,hash}))},
+    user:async u=>pubU(acc(u))};
+  return{doc,collection:c=>query(c,null),auth};
+}
+async function seedLocal(){
+  for(const [u,n,r,p] of [["md","MD Sir","md","md123"],["checker","Checker","checker","checker123"]]){
+    if(!(await db.doc("accounts/"+u).get()).exists){const salt="demo";await db.doc("accounts/"+u).set({username:u,name:n,role:r,salt,hash:await sha(salt+p)})}
+  }
+}
+const ticks=new Set();
+const refreshAll=()=>ticks.forEach(f=>f());
+async function call(o){
+  const c=new AbortController(),t=setTimeout(()=>c.abort(),15000);
+  const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o),signal:c.signal}).finally(()=>clearTimeout(t));
+  const j=await r.json();if(j.error)throw new Error(j.error);return j;
+}
+function makeDB(){
+  const w=async o=>{const j=await call(o);refreshAll();return j};
+  const doc=p=>{const i=p.indexOf("/"),col=p.slice(0,i),id=p.slice(i+1);return{
+    get:async()=>{const j=await call({op:"get",col,id});return{id,exists:j.data!=null,data:()=>j.data}},
+    set:d=>w({op:"set",col,id,data:d}),
+    update:d=>w({op:"update",col,id,data:d})}};
+  const query=(col,wh)=>({
+    where:(f,op,v)=>query(col,[f,v]),
+    add:d=>w({op:"add",col,data:d}),
+    onSnapshot:cb=>{
+      let last=null,stop=false;
+      const tick=async()=>{if(stop||document.hidden)return;
+        try{const j=await call({op:"list",col,where:wh});const s=JSON.stringify(j.docs);
+          if(s!==last){last=s;cb({docs:j.docs.map(d=>({id:d.id,data:()=>d.data}))})}}catch(e){}};
+      ticks.add(tick);tick();const t=setInterval(tick,4000);
+      return()=>{stop=true;clearInterval(t);ticks.delete(tick)};
+    }});
+  const auth={
+    login:(u,p)=>call({op:"login",username:u,password:p}).then(j=>j.user),
+    signup:(n,u,p)=>call({op:"signup",name:n,username:u,password:p}).then(j=>j.user),
+    changePw:(u,c,n)=>call({op:"changePw",username:u,old:c,password:n}),
+    user:u=>call({op:"user",username:u}).then(j=>j.user)};
+  return{doc,collection:c=>query(c,null),auth};
+}
+setInterval(()=>{if(ME&&ME.role==="md"&&tab==="home")render()},60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshAll()});
+let db=null,ME=null,APPTS=[],BLOCKS=[],NOTES=[],PEOPLE=[],unsubs=[],mode="in",err="",tab="",date="",FROM=null,TO=null,PUR="",pwMsg=null,AF="pending",OFFREASON="";
+const SK="md-appt-session";let PREV=null,URG=false;
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const today=iso(new Date());
+const isFri=s=>new Date(s+"T00:00").getDay()===5;
+const shift=(s,n)=>{let d=new Date(s+"T00:00");do{d.setDate(d.getDate()+n)}while(d.getDay()===5);return iso(d)};
+date=isFri(today)?shift(today,1):today;
+const SL=[];for(let m=600;m<1050;m+=30)SL.push(m);
+const f12=m=>{let h=Math.floor(m/60),mm=String(m%60).padStart(2,"0"),ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+mm+" "+ap};
+const D=s=>new Date(s+"T00:00");
+const fd=s=>D(s).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+const fdl=s=>s===today?"Today":s===iso(new Date(Date.now()+864e5))?"Tomorrow":D(s).toLocaleDateString("en-GB",{weekday:"long"});
+const ft=t=>new Date(t).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"});
+const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?"Just now":m<60?m+" min ago":m<1440?Math.floor(m/60)+" hr ago":ft(t)};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const sha0=async s=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)))].map(b=>b.toString(16).padStart(2,"0")).join("");
+const sha=async s=>{if(window.crypto&&crypto.subtle)return sha0(s);let h=5381;for(const c of s)h=(h*33^c.charCodeAt(0))>>>0;return"fb"+h};
+const stOf=a=>a.status==="pending"?"new":a.status;
+const BUSY=["new","forwarded","approved"];
+const busyAt=(d,m)=>APPTS.some(a=>a.date===d&&BUSY.includes(stOf(a))&&m>=a.start&&m<a.end)||BLOCKS.some(b=>b.date===d&&m>=b.start&&m<b.end);
+const nowMin=()=>{const n=new Date();return n.getHours()*60+n.getMinutes()};
+const starts=()=>SL.filter(m=>!busyAt(date,m)&&!(date===today&&m<=nowMin()));
+const ends=f=>{const r=[];for(let e=f+30;e<=1050&&!busyAt(date,e-30);e+=30)r.push(e);return r};
+const target=()=>ME.role==="emp"?"u:"+ME.username:ME.role;
+const ownerTo=a=>a.empRole==="checker"?"checker":"u:"+a.empUser;
+const ctaBtn=()=>'<button class="cta" onclick="PREV=null;tab=\'book\';render();window.scrollTo(0,0)"><span class="ctai">'+ic("cal",28)+'</span><span class="grow"><b>Book appointment</b><small>Pick a date and see MD sir\'s availability</small></span>'+ic("send",22)+'</button>';
+const ROLE={emp:"Employee",checker:"Checker",md:"Managing Director"};
+const CHIP=a=>{const s=stOf(a),r=ME&&ME.role;return({new:r==="emp"?"With checker":"To review",forwarded:r==="md"?"To approve":r==="emp"?"With MD sir":"Sent to MD",approved:"Approved",rejected:"Rejected",returned:"Returned",cancelled:"Cancelled"})[s]};
+const NT={request:["inbox","#255ea8","#e1ecfb"],forwarded:["send","#255ea8","#e1ecfb"],approved:["check","#1f7a49","#dcf3e6"],rejected:["x","#a3302a","#fbe3df"],returned:["undo","#9a6208","#fdf1dc"],cancelled:["x","#a3302a","#fbe3df"],def:["bell","#1d4f7c","#e8eff8"]};
+function modal(h){const o=document.createElement("div");o.className="ov";o.innerHTML='<div class="sheet"><div class="grab"></div>'+h+"</div>";o.onclick=e=>{if(e.target===o)o.remove()};document.body.appendChild(o)}
+const closeModal=()=>document.querySelectorAll(".ov").forEach(o=>o.remove());
+const info=(t,b)=>modal('<h2>'+t+'</h2><p class="sub">'+b+'</p><button class="btn" onclick="closeModal()">OK</button>');
+const notify=(to,text,type)=>Promise.all(to.map(t=>db.collection("notes").add({to:t,text,type,ts:Date.now(),read:false})));
+const span=a=>f12(a.start)+" - "+f12(a.end);
+const mins=a=>{const m=a.end-a.start;return m>=60?(m/60)+" hr":m+" min"};
+
+async function login(){
+  const u=document.getElementById("u").value.trim().toLowerCase(),p=document.getElementById("p").value;err="";
+  try{enter(await db.auth.login(u,p))}
+  catch(e){err=/BAD_LOGIN/.test(e.message)?"Wrong username or password.":"Could not log in: "+(e.message||"no connection");render()}
+}
+async function register(){
+  const g=id=>document.getElementById(id).value.trim();
+  const n=g("n"),u=g("u").toLowerCase(),p=document.getElementById("p").value;err="";
+  if(!n||!/^[a-z0-9_]{3,20}$/.test(u)){err="Enter your full name and a username (3-20 letters, numbers or _).";return render()}
+  if(p.length<6){err="Password must be at least 6 characters.";return render()}
+  try{enter(await db.auth.signup(n,u,p))}
+  catch(e){err=/TAKEN/.test(e.message)?"This username is taken.":"Could not create the account: "+(e.message||"no connection");render()}
+}
+async function changePw(){
+  const g=id=>document.getElementById(id).value,c=g("pc"),n=g("pn"),r=g("pr");
+  const fail=t=>{pwMsg={ok:false,text:t};render()};
+  if(n.length<6)return fail("New password must be at least 6 characters.");
+  if(n!==r)return fail("New passwords do not match.");
+  try{await db.auth.changePw(ME.username,c,n);pwMsg={ok:true,text:"Password changed."};render()}
+  catch(e){fail(/BAD_PW/.test(e.message)?"Current password is wrong.":"Could not change the password. Try again.")}
+}
+function enter(a){
+  ME={username:a.username,name:a.name,role:a.role};tab="home";
+  try{localStorage.setItem(SK,a.username)}catch(e){}
+  err="";PUR="";FROM=null;TO=null;pwMsg=null;
+  unsubs.push(db.collection("appts").onSnapshot(s=>{APPTS=s.docs.map(d=>({id:d.id,...d.data()}));render()}));
+  unsubs.push(db.collection("blocks").onSnapshot(s=>{BLOCKS=s.docs.map(d=>({id:d.id,...d.data()})).filter(b=>!b.removed);render()}));
+  unsubs.push(db.collection("notes").where("to","==",target()).onSnapshot(s=>{NOTES=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.ts-a.ts);render()}));
+  if(a.role==="md")unsubs.push(db.collection("accounts").where("role","==","emp").onSnapshot(s=>{PEOPLE=s.docs.map(d=>({username:d.data().username,name:d.data().name})).sort((a,b)=>a.name.localeCompare(b.name));render()}));
+  render();
+}
+function logout(){unsubs.forEach(f=>f());unsubs=[];ME=null;APPTS=[];BLOCKS=[];NOTES=[];PEOPLE=[];try{localStorage.removeItem(SK)}catch(e){}render()}
+function togglePw(){const p=document.getElementById("p");p.type=p.type==="password"?"text":"password"}
+function setDate(v){if(!v)return;date=isFri(v)?shift(v,1):v;FROM=null;TO=null;render()}
+function setFrom(v){FROM=+v;TO=null;render()}
+async function submit(){
+  if(FROM===null||TO===null)return info("Pick a time","Choose a start and end time first.");
+  if(!PUR.trim())return info("Add a purpose","Write what the meeting is about.");
+  if(busyAt(date,FROM))return info("MD sir is not available","Someone just booked this time. Please choose another.");
+  const a={empUser:ME.username,empName:ME.name,date,start:FROM,end:TO,purpose:PUR.trim(),status:ME.role==="checker"?"forwarded":"new",empRole:ME.role,at:Date.now(),prev:PREV||null,urgent:URG};if(ME.role==="checker")a.fwdAt=Date.now();
+  try{
+    await db.collection("appts").add(a);
+    if(ME.role==="checker")await notify(["md"],(URG?"URGENT: ":"")+ME.name+" (Checker) requested an appointment on "+fd(date)+", "+span(a)+" for your approval","forwarded");else await notify(["checker"],(URG?"URGENT: ":"")+ME.name+" requested an appointment on "+fd(date)+", "+span(a),"request");
+    PUR="";PREV=null;URG=false;FROM=null;TO=null;tab="mine";
+    ME.role==="checker"?info("Sent to MD sir","Your request has gone straight to MD sir for approval. You will be notified."):info("Request sent","Your checker will review it and send it to MD sir. You will be notified at every step.");
+  }catch(e){info("Not sent","Could not send the request. Please try again.")}
+  render();
+}
+async function forward(id){
+  const a=APPTS.find(x=>x.id===id);closeModal();
+  try{await db.doc("appts/"+id).update({status:"forwarded",fwdAt:Date.now()});
+    await notify(["md"],"Checker sent you "+a.empName+"'s request for approval: "+fd(a.date)+", "+span(a),"forwarded");
+    await notify([ownerTo(a)],"Your request for "+fd(a.date)+", "+span(a)+" has been sent to MD sir.","forwarded");
+  }catch(e){info("Not saved","Please try again.")}
+}
+function returnForm(id){
+  closeModal();
+  modal('<h2>Return to employee</h2><p class="sub">Tell them why this cannot be booked. They can book again.</p><label>Note for employee</label><textarea id="rn" rows="3" placeholder="e.g. MD sir is travelling that day. Please pick another date."></textarea><button class="btn bad" onclick="doReturn(\''+id+'\')">'+ic("undo",18)+'Return with note</button><button class="btn ghost sm" onclick="closeModal()">Cancel</button>');
+}
+async function doReturn(id){
+  const n=document.getElementById("rn").value.trim();if(!n)return;
+  const a=APPTS.find(x=>x.id===id);closeModal();
+  try{await db.doc("appts/"+id).update({status:"returned",note:n,decAt:Date.now()});
+    await notify([ownerTo(a)],"Your request for "+fd(a.date)+", "+span(a)+" was returned. Note: "+n,"returned");
+  }catch(e){info("Not saved","Please try again.")}
+}
+async function decide(id,st){
+  const a=APPTS.find(x=>x.id===id);closeModal();
+  try{await db.doc("appts/"+id).update({status:st,decAt:Date.now()});
+    const t=fd(a.date)+", "+span(a);
+    await notify([...new Set([ownerTo(a),"checker"])],st==="approved"?a.empName+"'s appointment is booked: "+t:a.empName+"'s appointment request was rejected: "+t,st);
+  }catch(e){info("Not saved","Please try again.")}
+}
+function rebook(id){const a=APPTS.find(x=>x.id===id);PREV=id;if(a.date>=today)date=a.date;PUR=a.purpose;FROM=null;TO=null;tab="book";render();window.scrollTo(0,0)}
+function detail(id){
+  const a=APPTS.find(x=>x.id===id);if(!a)return;const s=stOf(a);
+  let h='<div class="crow" style="margin-bottom:6px"><div class="ini">'+esc(a.empName.slice(0,1).toUpperCase())+'</div><div class="grow"><b>'+esc(a.empName)+'</b><small>Appointment request</small></div><span class="chip s-'+s+'">'+CHIP(a)+'</span></div>'+
+  [["Date",fd(a.date)],["Time",span(a)+" ("+mins(a)+")"],["Purpose",esc(a.purpose)]].map(r=>'<div class="row"><span>'+r[0]+"</span><span>"+r[1]+"</span></div>").join("");
+  const ev=[["Requested by "+esc(a.empName),a.at]];if(a.fwdAt)ev.push(["Sent to MD sir by checker",a.fwdAt]);const dl={approved:"Approved by MD sir",rejected:"Rejected by MD sir",returned:"Returned by checker"}[s];if(a.decAt&&dl)ev.push([dl,a.decAt]);if(a.canAt)ev.push(["Cancelled by "+esc(a.canBy||"user"),a.canAt]);
+  h+='<div class="act">'+ev.map(e=>"<div>"+e[0]+"<small>"+ft(e[1])+"</small></div>").join("")+"</div>";
+  if(a.note)h+='<div class="msg"><b>Note:</b> '+esc(a.note)+"</div>";
+  if(ME.role==="checker"&&s==="new")h+='<button class="btn" onclick="forward(\''+id+'\')">'+ic("send",18)+'Send to MD for approval</button><button class="btn out sm" onclick="returnForm(\''+id+'\')">'+ic("undo",18)+'Return to employee with note</button>';
+  if(ME.role==="md"&&s==="forwarded")h+='<div class="two"><button class="btn bad" onclick="decide(\''+id+'\',\'rejected\')">'+ic("x",18)+'Reject</button><button class="btn" onclick="decide(\''+id+'\',\'approved\')">'+ic("check",18)+'Approve</button></div>';
+  if(["new","forwarded","approved"].includes(s)&&a.date>=today&&(a.empUser===ME.username||ME.role!=="emp"))h+='<button class="btn out sm" style="color:var(--bad)" onclick="cancelAppt(\''+id+'\')">'+ic("x",18)+'Cancel appointment</button>';
+  modal(h+'<button class="btn ghost sm" onclick="closeModal()">Close</button>');
+}
+function cancelAppt(id){closeModal();modal('<h2>Cancel this appointment?</h2><p class="sub">The time slot will become free again for others to book.</p><button class="btn bad" onclick="doCancel(\''+id+'\')">Yes, cancel it</button><button class="btn ghost sm" onclick="closeModal()">Keep it</button>')}
+async function doCancel(id){
+  const a=APPTS.find(x=>x.id===id);closeModal();
+  try{await db.doc("appts/"+id).update({status:"cancelled",canAt:Date.now(),canBy:ME.name});
+    const to=[...new Set([ownerTo(a),"checker"].concat(stOf(a)==="new"?[]:["md"]))].filter(x=>x!==target());
+    await notify(to,ME.name+" cancelled the appointment: "+fd(a.date)+", "+span(a)+" ("+a.empName+")","cancelled");
+  }catch(e){info("Not saved","Could not cancel. Please try again.")}
+}
+function bellOpen(){
+  const row=n=>{const t=NT[n.type]||NT.def;return'<div class="nt '+(n.read?"":"un")+'"><div class="ni" style="background:'+t[2]+';color:'+t[1]+'">'+ic(t[0],19)+'</div><div class="grow"><p>'+esc(n.text)+"</p><small>"+ago(n.ts)+"</small></div></div>"};
+  const nw=NOTES.filter(n=>!n.read),old=NOTES.filter(n=>n.read);
+  modal('<div class="crow"><h2 class="grow" style="margin:0">Notifications</h2>'+(nw.length?'<span class="chip s-forwarded">'+nw.length+' new</span>':"")+'</div>'+(NOTES.length?(nw.length?'<div class="sub" style="margin-top:12px">New</div>'+nw.map(row).join(""):"")+(old.length?'<div class="sub" style="margin-top:12px">Earlier</div>'+old.slice(0,20).map(row).join(""):""):'<div class="empty">'+ic("bell",34)+"You are all caught up.</div>")+'<button class="btn ghost" onclick="closeModal()">Close</button>');
+  nw.forEach(n=>db.doc("notes/"+n.id).update({read:true}).catch(()=>{}));
+}
+function busyTap(s,e){info("MD sir is not available",f12(s)+" - "+f12(e)+" is already taken. Please choose a free time.")}
+function person(u){
+  const p=PEOPLE.find(x=>x.username===u),l=APPTS.filter(a=>a.empUser===u&&(ME.role!=="md"||["forwarded","approved","rejected"].includes(stOf(a)))).sort((a,b)=>b.at-a.at);
+  modal('<div class="crow"><div class="ini">'+esc(p.name.slice(0,1).toUpperCase())+'</div><div class="grow"><b>'+esc(p.name)+'</b><small>@'+esc(u)+'</small></div></div><div class="sec"><h2>Appointments</h2><span>'+l.length+'</span></div>'+(l.length?l.map(a=>'<div class="row"><span>'+fd(a.date)+"<br><small>"+span(a)+'</small></span><span class="chip s-'+stOf(a)+'" style="align-self:center">'+CHIP(a)+"</span></div>").join(""):'<div class="empty">No appointments yet.</div>')+'<button class="btn ghost" onclick="closeModal()">Close</button>');
+}
+
+const apptRow=a=>'<button class="ar" onclick="detail(\''+a.id+'\')"><div class="tm">'+f12(a.start)+"<br>"+f12(a.end)+'</div><div class="grow"><b>'+esc(a.empName)+UB(a)+'</b><small>'+esc(a.purpose)+'</small></div><span class="chip s-'+stOf(a)+'">'+CHIP(a)+"</span></button>";
+const dbadge=s=>'<div class="dbadge"><b>'+D(s).getDate()+"</b><small>"+D(s).toLocaleDateString("en-GB",{month:"short"})+"</small></div>";
+const dateCard=(s,list)=>'<div class="dc"><div class="dch">'+dbadge(s)+'<div class="grow"><b>'+fdl(s)+'</b><small>'+D(s).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})+" &middot; "+list.length+" appointment"+(list.length>1?"s":"")+"</small></div></div>"+list.map(apptRow).join("")+"</div>";
+const track=s=>{const m={new:"dcn",forwarded:"ddc",approved:"ddd",rejected:"ddx",returned:"dxn"}[s];if(!m)return"";const L=["Sent","Checker","MD sir"];return'<div class="trk">'+[...m].map((c,i)=>'<div class="'+({d:"d",c:"c",x:"x",n:""})[c]+'"><i></i>'+L[i]+"</div>").join("")+"</div>"};
+const dateBar=()=>'<div class="dbar"><button onclick="setDate(shift(date,-1))" '+(tab==="book"&&date<=today?"disabled":"")+' aria-label="Previous day">&lsaquo;</button><input type="date" '+(tab==="book"?'min="'+today+'"':"")+' value="'+date+'" onchange="setDate(this.value)"><button onclick="setDate(shift(date,1))" aria-label="Next day">&rsaquo;</button></div>';
+const x=m=>((m-600)/450*100).toFixed(2);
+const tlHtml=(day,sel)=>'<div class="tl">'+day.map(a=>'<div class="blk" style="left:'+x(a.start)+'%;width:'+((a.end-a.start)/450*100).toFixed(2)+'%" onclick="busyTap('+a.start+','+a.end+')"></div>').join("")+(sel?'<div class="blk sel" style="left:'+x(sel[0])+'%;width:'+((sel[1]-sel[0])/450*100).toFixed(2)+'%"></div>':"")+'</div><div class="ticks">'+[[600,"10 AM"],[720,"12 PM"],[840,"2 PM"],[960,"4 PM"],[1050,"5:30 PM"]].map(t=>'<span style="left:'+x(t[0])+'%'+(t[0]===600?";transform:none":t[0]===1050?";transform:translateX(-100%)":"")+'">'+t[1]+"</span>").join("")+'</div><div class="legend"><span><i style="background:var(--soft)"></i>Free</span><span><i style="background:var(--busy)"></i>Not available</span>'+(sel?'<span><i style="background:var(--acc)"></i>Your time</span>':"")+"</div>";
+
+const BACK='<button class="btn out sm back" onclick="PREV=null;tab=\'home\';render();window.scrollTo(0,0)">&lsaquo; Back</button>';
+function declBtn(){
+  const n=APPTS.filter(a=>stOf(a)==="returned").length;
+  return'<button class="card dcl" onclick="declinedList()"><div class="ini" style="color:var(--warn)">'+ic("undo",20)+'</div><div class="grow"><b>Declined by checker</b><small>Requests for your time that the checker returned</small></div><span class="chip s-returned">'+n+'</span></button>';
+}
+function declinedList(){
+  const l=APPTS.filter(a=>stOf(a)==="returned").sort((a,b)=>(b.decAt||0)-(a.decAt||0));
+  modal('<h2>Declined by checker</h2><p class="sub">Only you can see this list. You were not notified about these.</p>'+(l.length?l.map(a=>'<button class="card" style="box-shadow:none;border:1px solid var(--line)" onclick="closeModal();detail(\''+a.id+'\')"><div class="crow">'+dbadge(a.date)+'<div class="grow"><b>'+esc(a.empName)+'</b><small>'+fdl(a.date)+' &middot; '+span(a)+' &middot; '+esc(a.purpose)+'</small></div></div>'+(a.note?'<div class="msg"><b>Checker\'s reason:</b> '+esc(a.note)+'</div>':'')+'</button>').join(""):'<div class="empty">'+ic("check",34)+'Nothing declined.</div>')+'<button class="btn ghost" onclick="closeModal()">Close</button>');
+}
+function empHome(){
+  const mine=APPTS.filter(a=>a.empUser===ME.username);
+  const pend=mine.filter(a=>["new","forwarded"].includes(stOf(a))).length;
+  const up=mine.filter(a=>stOf(a)==="approved"&&a.date>=today).sort((a,b)=>a.date.localeCompare(b.date)||a.start-b.start);
+  let h='<button class="cta" onclick="PREV=null;tab=\'book\';render();window.scrollTo(0,0)"><span class="ctai">'+ic("cal",28)+'</span><span class="grow"><b>Book appointment</b><small>Pick a date and see MD sir\'s availability</small></span>'+ic("send",22)+'</button>';
+  h+='<div class="stat" style="grid-template-columns:repeat(2,1fr)"><div><b>'+pend+'</b><small>In review</small></div><div><b>'+up.length+'</b><small>Confirmed</small></div></div>';
+  if(up[0])h+='<div class="sec"><h2>Your next appointment</h2></div><div class="card"><div class="crow">'+dbadge(up[0].date)+'<div class="grow"><b>'+fdl(up[0].date)+' &middot; '+span(up[0])+'</b><small>'+esc(up[0].purpose)+'</small></div><span class="chip s-approved">Approved</span></div></div>';
+  h+='<div class="sec"><h2>Recent requests</h2><span onclick="tab=\'appt\';render()" style="color:var(--acc);cursor:pointer">See all</span></div>'+mineView(3);
+  return h;
+}
+function chkQueue(q){
+  const g={};q.forEach(a=>(g[a.empUser]=g[a.empUser]||[]).push(a));
+  return Object.entries(g).map(([u,l])=>{
+    const a=l[0],h=APPTS.filter(x=>x.empUser===u&&stOf(x)!=="new").length;
+    return'<button class="card" onclick="empCard(\''+u+'\')"><div class="crow"><div class="ini">'+esc(a.empName.slice(0,1).toUpperCase())+'</div><div class="grow"><b>'+esc(a.empName)+(l.some(x=>x.urgent)?UB({urgent:1}):"")+'</b><small>'+(l.length>1?l.length+" requests waiting":fdl(a.date)+" &middot; "+span(a)+" &middot; "+esc(a.purpose))+'</small></div>'+(h?'<span class="chip s-returned">History '+h+'</span>':'')+'<span style="color:var(--acc)">'+ic("send",20)+'</span></div></button>';
+  }).join("");
+}
+function empCard(u){
+  const all=APPTS.filter(a=>a.empUser===u),pend=all.filter(a=>stOf(a)==="new").sort((a,b)=>a.date.localeCompare(b.date)||a.start-b.start);
+  const hist=all.filter(a=>stOf(a)!=="new").sort((a,b)=>b.at-a.at),nm=all[0]?all[0].empName:u;
+  const line=a=>fd(a.date)+", "+span(a)+" &middot; "+esc(a.purpose);
+  let h='<div class="crow"><div class="ini">'+esc(nm.slice(0,1).toUpperCase())+'</div><div class="grow"><b>'+esc(nm)+'</b><small>@'+esc(u)+'</small></div></div>';
+  h+='<div class="sec"><h2>Waiting for review</h2><span>'+pend.length+'</span></div>';
+  h+=pend.map(a=>{const pv=a.prev&&APPTS.find(x=>x.id===a.prev);
+    return'<div class="card" style="box-shadow:none;border:1px solid var(--line)"><b>'+fd(a.date)+UB(a)+'</b><small style="display:block;color:var(--mute)">'+span(a)+" ("+mins(a)+") &middot; "+esc(a.purpose)+"</small>"+
+    (pv?'<div class="msg"><b>Booked again.</b> Earlier request: '+line(pv)+"<br>Status: "+{returned:"returned",rejected:"rejected by MD",approved:"approved",forwarded:"sent to MD"}[stOf(pv)]+(pv.note?" &middot; Note: "+esc(pv.note):"")+"</div>":"")+
+    '<button class="btn sm" onclick="forward(\''+a.id+'\')">'+ic("send",18)+'Send to MD for approval</button><button class="btn out sm" onclick="returnForm(\''+a.id+'\')">'+ic("undo",18)+"Return with note</button></div>"}).join("");
+  h+='<div class="sec"><h2>History</h2><span>'+hist.length+"</span></div>";
+  h+=hist.length?hist.map(a=>'<div class="row"><span>'+fd(a.date)+"<br><small>"+span(a)+" &middot; "+esc(a.purpose)+(a.note?"<br>Note: "+esc(a.note):"")+'</small></span><span class="chip s-'+stOf(a)+'" style="align-self:center">'+{forwarded:"Sent to MD",approved:"Approved",rejected:"Rejected",returned:"Returned"}[stOf(a)]+"</span></div>").join(""):'<div class="empty">No earlier appointments.</div>';
+  modal(h+'<button class="btn ghost" onclick="closeModal()">Close</button>');
+}
+const UB=a=>a.urgent?' <span class="chip urg">URGENT</span>':"";
+function nextFree(){
+  for(let i=0;i<60;i++){const d=shift(today,i);if(isFri(d))continue;
+    const m=SL.find(m=>!busyAt(d,m)&&!(d===today&&m<=nowMin()));
+    if(m!==undefined){date=d;FROM=m;TO=null;render();return}}
+  info("No free slot","No free time in the next 60 days.");
+}
+function agenda(){
+  const n=nowMin(),l=APPTS.filter(a=>a.date===today&&stOf(a)==="approved").sort((a,b)=>a.start-b.start),bl=BLOCKS.filter(b=>b.date===today);
+  const nx=l.find(a=>a.end>n),lb=a=>{const d=a.start-n;return d<=0?"In progress until "+f12(a.end):"Next in "+(d>=60?Math.floor(d/60)+"h ":"")+(d%60)+"m"};
+  let h='<div class="nxt"><small>Today\'s agenda</small><b style="display:block;font-size:21px;margin:2px 0">'+(nx?lb(nx):l.length?"All done for today":"No meetings today")+'</b>'+(nx?'<small>'+esc(nx.empName)+' &middot; '+span(nx)+' &middot; '+esc(nx.purpose)+'</small>':"")+'</div>';
+  if(l.length||bl.length)h+='<div class="card">'+l.map(a=>'<div class="row" style="'+(a.end<=n?"opacity:.5":"")+'"><span><b>'+span(a)+'</b><br><small>'+esc(a.empName)+' &middot; '+esc(a.purpose)+'</small></span></div>').join("")+bl.map(b=>'<div class="row"><span><b>'+span(b)+'</b><br><small>Blocked'+(b.note?" &middot; "+esc(b.note):"")+'</small></span></div>').join("")+'</div>';
+  return h;
+}
+function statsView(){
+  const L=APPTS.filter(vis),c=s=>L.filter(a=>stOf(a)===s).length,ap=c("approved"),rj=c("rejected"),rt=c("returned"),pn=c("new")+c("forwarded"),dc=ap+rj,md=ME.role==="md";
+  const bars=(arr,mx)=>arr.map(([n,v])=>'<div style="margin:9px 0"><div class="crow"><span class="grow">'+esc(n)+'</span><b>'+v+'</b></div><div style="height:8px;border-radius:6px;background:var(--busy)"><div style="height:8px;border-radius:6px;background:var(--acc);width:'+(mx?v/mx*100:0)+'%"></div></div></div>').join("");
+  const by={};L.forEach(a=>by[a.empName]=(by[a.empName]||0)+1);const top=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const wd=[0,0,0,0,0,0,0];L.forEach(a=>wd[D(a.date).getDay()]++);const dn=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const st=(v,t)=>'<div><b>'+v+'</b><small>'+t+'</small></div>';
+  let h='<div class="stat">'+st(L.length,"Requests")+st(dc?Math.round(ap/dc*100)+"%":"-","Approval rate")+st(pn,"Pending")+'</div>';
+  h+='<div class="stat">'+st(ap,"Approved")+st(rj,"Rejected")+st(md?L.filter(a=>a.urgent).length:rt,md?"Urgent":"Returned")+'</div>';
+  h+='<div class="panel"><h2>Who books the most</h2>'+(top.length?bars(top,top[0][1]):'<p class="sub">No data yet.</p>')+'</div>';
+  h+='<div class="panel"><h2>Busiest days</h2>'+bars([0,1,2,3,4,6].map(i=>[dn[i],wd[i]]),Math.max(1,...wd))+'</div>';
+  return h;
+}
+function bookView(){
+  const st=starts();
+  if(FROM===null||!st.includes(FROM))FROM=st.length?st[0]:null;
+  const en=FROM===null?[]:ends(FROM);
+  if(TO===null||!en.includes(TO))TO=en.length?en[0]:null;
+  const day=APPTS.filter(a=>a.date===date&&BUSY.includes(stOf(a))).concat(BLOCKS.filter(b=>b.date===date)).sort((a,b)=>a.start-b.start);
+  let h=BACK+'<div class="panel"><div class="step"><i>1</i><h2 style="margin:0">Choose a date</h2></div>'+dateBar()+'<p class="sub" style="margin-top:8px">'+fd(date)+" &middot; Office hours 10:00 AM - 5:30 PM</p><button class=\"btn out sm\" style=\"margin-top:10px\" onclick=\"nextFree()\">"+ic("bolt",18)+"Find next free slot</button></div>";
+  h+='<div class="panel"><div class="step"><i>2</i><h2 style="margin:0">MD sir\'s availability</h2></div>'+tlHtml(day,FROM!==null&&TO!==null?[FROM,TO]:null)+"</div>";
+  if(!st.length)return h+'<div class="panel empty">'+ic("clock",34)+"MD sir has no free time on this day. Please pick another date.</div>";
+  h+='<div class="panel"><div class="step"><i>3</i><h2 style="margin:0">Time and purpose</h2></div><div class="two"><div><label style="margin-top:0">From</label><select onchange="setFrom(this.value)">'+st.map(m=>'<option value="'+m+'"'+(m===FROM?" selected":"")+">"+f12(m)+"</option>").join("")+'</select></div><div><label style="margin-top:0">To</label><select onchange="TO=+this.value;render()">'+en.map(m=>'<option value="'+m+'"'+(m===TO?" selected":"")+">"+f12(m)+"</option>").join("")+"</select></div></div>";
+  h+='<label>Booking as</label><input value="'+esc(ME.name)+'" readonly><label>Purpose</label><textarea rows="3" oninput="PUR=this.value" placeholder="What is the meeting about?">'+esc(PUR)+'</textarea>';h+='<label style="display:flex;gap:10px;align-items:center;margin-top:12px;text-transform:none;font-size:14px"><input type="checkbox" style="width:20px;height:20px" '+(URG?"checked":"")+' onchange="URG=this.checked"> Mark as urgent</label>';
+  h+='<div class="sum">'+ic("cal",24)+"<div><b>"+fd(date)+"</b><small>"+f12(FROM)+" - "+f12(TO)+" ("+(TO-FROM>=60?(TO-FROM)/60+" hr":(TO-FROM)+" min")+')</small></div></div><button class="btn" onclick="submit()">'+ic("send",18)+(ME.role==="checker"?"Send to MD for approval":"Send request to checker")+"</button></div>";
+  return h;
+}
+function mineView(lim){
+  const mine=APPTS.filter(a=>a.empUser===ME.username).sort((a,b)=>b.at-a.at).slice(0,lim||999);
+  if(!mine.length)return'<div class="panel empty">'+ic("list",34)+"No requests yet. Tap Book appointment on Home to make your first one.</div>";
+  return mine.map(a=>{const s=stOf(a);return'<div class="card"><div class="crow">'+dbadge(a.date)+'<div class="grow"><b>'+fdl(a.date)+' &middot; '+span(a)+'</b><small>'+esc(a.purpose)+'</small></div><span class="chip s-'+s+'">'+CHIP(a)+"</span></div>"+track(s)+(a.note?'<div class="msg"><b>Checker\'s note:</b> '+esc(a.note)+"</div>":"")+(s==="returned"||s==="rejected"||s==="cancelled"?'<button class="btn ghost sm" onclick="rebook(\''+a.id+'\')">'+ic("plus",18)+"Book again</button>":"")+"</div>"}).join("");
+}
+const GRP={pending:["new","forwarded"],approved:["approved"],cancelled:["cancelled","rejected","returned"]};
+function mdBlockList(){
+  if(ME.role!=="md")return"";
+  const l=BLOCKS.filter(b=>b.date>=today).sort((a,b)=>a.date.localeCompare(b.date)||a.start-b.start);
+  return'<div class="sec"><h2>Blocked times</h2><span>'+l.length+'</span></div>'+(l.length?l.map(b=>'<div class="card" style="border-left:4px solid var(--mute)"><div class="crow">'+dbadge(b.date)+'<div class="grow"><b>'+span(b)+' &middot; Blocked</b><small>'+fdl(b.date)+(b.note?" &middot; "+esc(b.note):"")+'</small></div><button class="btn out sm" style="width:auto;padding:8px 14px;margin:0" onclick="unblock(\''+b.id+'\')">Remove</button></div></div>').join(""):'<div class="panel empty">'+ic("lock",34)+"No blocked times.</div>");
+}
+function apptView(){
+  const base=APPTS.filter(a=>ME.role==="emp"?a.empUser===ME.username:ME.role==="md"?vis(a):true);
+  const n=k=>base.filter(a=>GRP[k].includes(stOf(a))).length;
+  const seg=[["pending","Pending"],["approved","Approved"],["cancelled","Cancelled"]];
+  let h=(ME.role==="md"?'<button class="btn out sm" style="margin:0 0 12px" onclick="blockForm()">'+ic("plus",18)+"Block a time</button>":"")+'<div class="panel" style="padding:8px"><div class="seg" style="margin:0">'+seg.map(s=>'<button class="'+(AF===s[0]?"on":"")+'" onclick="AF=\''+s[0]+'\';render()">'+s[1]+" ("+n(s[0])+")</button>").join("")+"</div></div>";
+  const l=base.filter(a=>GRP[AF].includes(stOf(a))).sort((a,b)=>AF==="cancelled"?b.date.localeCompare(a.date)||b.start-a.start:a.date.localeCompare(b.date)||a.start-b.start);
+  h+=l.length?l.map(a=>'<button class="card" onclick="detail(\''+a.id+'\')"><div class="crow">'+dbadge(a.date)+'<div class="grow"><b>'+esc(a.empName)+UB(a)+'</b><small>'+fdl(a.date)+" &middot; "+span(a)+" &middot; "+esc(a.purpose)+'</small></div><span class="chip s-'+stOf(a)+'">'+CHIP(a)+"</span></div></button>").join(""):'<div class="panel empty">'+ic(AF==="approved"?"check":AF==="cancelled"?"x":"clock",34)+"No "+AF+" appointments.</div>";
+  return h+mdBlockList();
+}
+const vis=a=>ME.role==="md"?(["forwarded","approved","rejected"].includes(stOf(a))||(stOf(a)==="cancelled"&&(a.fwdAt||a.empRole==="checker"))):true;
+function homeView(){
+  const md=ME.role==="md",want=md?"forwarded":"new";
+  const q=APPTS.filter(a=>stOf(a)===want).sort((a,b)=>(b.urgent?1:0)-(a.urgent?1:0)||a.date.localeCompare(b.date)||a.start-b.start);
+  const act=APPTS.filter(a=>vis(a)&&["new","forwarded","approved"].includes(stOf(a))&&a.date>=today);
+  const td=act.filter(a=>a.date===today).length,up=act.filter(a=>a.date>today).length;
+  let h=(md?agenda():"")+'<div class="stat"><div><b>'+q.length+"</b><small>"+(md?"To approve":"To review")+"</small></div><div><b>"+td+"</b><small>Today</small></div><div><b>"+up+"</b><small>Upcoming</small></div></div>";
+  h+='<div class="sec"><h2>'+(md?"Waiting for your approval":"Needs your action")+"</h2><span>"+q.length+"</span></div>";
+  h+=q.length&&!md?chkQueue(q):q.length?q.map(a=>'<button class="card" onclick="detail(\''+a.id+'\')"><div class="crow">'+dbadge(a.date)+'<div class="grow"><b>'+esc(a.empName)+UB(a)+'</b><small>'+fdl(a.date)+" &middot; "+span(a)+" &middot; "+esc(a.purpose)+'</small></div><span style="color:var(--acc)">'+ic(md?"check":"send",20)+"</span></div></button>").join(""):'<div class="panel empty">'+ic("check",34)+"Nothing waiting. You are all caught up.</div>";
+  const g={};act.sort((a,b)=>a.start-b.start).forEach(a=>(g[a.date]=g[a.date]||[]).push(a));
+  const ds=Object.keys(g).sort();
+  h+='<div class="sec"><h2>Appointments by date</h2><span>'+ds.length+" day"+(ds.length===1?"":"s")+"</span></div>";
+  h+=ds.length?ds.map(s=>dateCard(s,g[s])).join(""):'<div class="panel empty">'+ic("cal",34)+"No upcoming appointments.</div>";
+  return h;
+}
+const dayBlocks=()=>BLOCKS.filter(b=>b.date===date).sort((a,b)=>a.start-b.start);
+function blockCards(){
+  if(ME.role==="emp")return"";const md=ME.role==="md";
+  return dayBlocks().map(b=>'<div class="card" style="border-left:4px solid var(--mute)"><div class="crow"><div class="ini" style="color:var(--mute)">'+ic("x",20)+'</div><div class="grow"><b>'+span(b)+' &middot; Blocked</b><small>'+(md?"Blocked by you":"Blocked by MD sir")+'</small></div>'+(md?'<button class="btn out sm" style="width:auto;padding:8px 14px" onclick="unblock(\''+b.id+'\')">Remove</button>':"")+'</div>'+(b.note?'<div class="msg"><b>Note:</b> '+esc(b.note)+'</div>':"")+'</div>').join("");
+}
+function blockForm(){
+  const o=m=>'<option value="'+m+'">'+f12(m)+'</option>';
+  modal('<h2>Block a time</h2><p class="sub">Employees will see this time as not available. Only you and the checker can see your note.</p><label>Date</label><input type="date" id="bd" min="'+today+'" value="'+(date<today?today:date)+'"><div class="two"><div><label>From</label><select id="bf">'+SL.map(o).join("")+'</select></div><div><label>To</label><select id="bt">'+SL.map(m=>m+30).map(o).join("")+'</select></div></div><label>Note (checker only)</label><textarea id="bn" rows="3" placeholder="e.g. Board meeting, personal work"></textarea><button class="btn" onclick="saveBlock()">Block this time</button><button class="btn ghost" onclick="closeModal()">Cancel</button>');
+  document.getElementById("bt").selectedIndex=1;
+}
+async function saveBlock(){
+  const d=document.getElementById("bd").value,f=+document.getElementById("bf").value,t=+document.getElementById("bt").value,n=document.getElementById("bn").value.trim();
+  if(!d||d<today)return info("Pick a date","Choose today or a future date.");
+  if(isFri(d))return info("Friday is off","Appointments are not taken on Fridays.");
+  if(t<=f)return info("Check the time","The end time must be after the start time.");
+  const clash=APPTS.some(a=>a.date===d&&BUSY.includes(stOf(a))&&a.start<t&&a.end>f)||BLOCKS.some(b=>b.date===d&&b.start<t&&b.end>f);
+  if(clash)return info("Time already taken","There is already an appointment or block in this time. Choose another time.");
+  try{await db.collection("blocks").add({date:d,start:f,end:t,note:n,at:Date.now()});closeModal();date=d;render()}
+  catch(e){info("Not saved","Could not block this time. Please try again.")}
+}
+async function unblock(id){try{await db.doc("blocks/"+id).update({removed:true})}catch(e){info("Not removed","Please try again.")}}
+function calView(){
+  const day=APPTS.filter(a=>a.date===date&&vis(a)&&stOf(a)!=="returned").sort((a,b)=>a.start-b.start);
+  return'<div class="panel">'+dateBar()+'<p class="sub" style="margin-top:8px">'+fd(date)+'</p>'+tlHtml(day.filter(a=>BUSY.includes(stOf(a))).concat(dayBlocks()),null)+(ME.role==="md"?'<button class="btn out sm" style="margin-top:12px" onclick="blockForm()">'+ic("plus",18)+"Block a time</button>":"")+"</div>"+blockCards()+(day.length?dateCard(date,day):'<div class="panel empty">'+ic("cal",34)+"Nothing booked for this day.</div>");
+}
+function peopleView(){
+  if(!PEOPLE.length)return'<div class="panel empty">'+ic("users",34)+"No employees have signed up yet.</div>";
+  return PEOPLE.map(p=>{const l=APPTS.filter(a=>a.empUser===p.username&&vis(a));return'<button class="card" onclick="person(\''+p.username+'\')"><div class="crow"><div class="ini">'+esc(p.name.slice(0,1).toUpperCase())+'</div><div class="grow"><b>'+esc(p.name)+'</b><small>@'+esc(p.username)+'</small></div><div style="text-align:right"><b>'+l.length+'</b><small>appointments</small></div></div></button>'}).join("");
+}
+function meView(){
+  const f=(id,l,ph)=>'<label>'+l+'</label><div class="fi">'+ic("lock",18)+'<input id="'+id+'" type="password" autocomplete="'+(id==="pc"?"current-password":"new-password")+'"></div>';
+  return'<div class="panel" style="text-align:center"><div class="ini big">'+esc(ME.name.slice(0,1).toUpperCase())+'</div><h2 style="margin-top:12px;font-size:19px">'+esc(ME.name)+'</h2><span class="chip s-forwarded">'+ROLE[ME.role]+'</span><p class="sub" style="margin-top:8px">@'+esc(ME.username)+"</p></div>"+
+  (ME.role==="md"?declBtn():"")+'<div class="panel"><h2>Change password</h2><p class="sub">Use at least 6 characters.</p>'+f("pc","Current password")+f("pn","New password")+f("pr","Confirm new password")+(pwMsg?'<div class="msg '+(pwMsg.ok?"ok":"")+'">'+esc(pwMsg.text)+"</div>":"")+'<button class="btn" onclick="changePw()">'+ic("lock",18)+'Update password</button></div><button class="btn out" onclick="logout()">'+ic("out",18)+"Log out</button>";
+}
+function loginView(){
+  const su=mode==="up",fi=(id,l,i,t,ac)=>'<label>'+l+'</label><div class="fi">'+ic(i,18)+'<input id="'+id+'" type="'+(t||"text")+'" autocapitalize="none" autocomplete="'+ac+'">'+(id==="p"?'<button class="eye" type="button" onclick="togglePw()" aria-label="Show password">'+ic("eye",18)+"</button>":"")+"</div>";
+  return'<div class="lg"><div class="lgtop"><div class="logo">'+ic("cal",30)+'</div><h1>Timenest</h1><p>Book the right slot, effortlessly</p></div><div class="lgc"><div class="seg"><button class="'+(su?"":"on")+'" onclick="mode=\'in\';err=\'\';render()">Log in</button><button class="'+(su?"on":"")+'" onclick="mode=\'up\';err=\'\';render()">Sign up</button></div>'+(su?fi("n","Full name","user","text","name"):"")+fi("u","Username","mail","text","username")+fi("p","Password","lock","password",su?"new-password":"current-password")+(err?'<div class="err">'+esc(err)+"</div>":"")+'<button class="btn" onclick="'+(su?"register()":"login()")+'">'+(su?"Create employee account":"Log in")+'</button></div><p class="fine">Employees can sign up here. MD and Checker accounts are created by the admin.'+(LOCAL?'<br><br><b>OFFLINE MODE: server not reachable, data is saved on this device only'+(OFFREASON?' ('+esc(OFFREASON)+')':'')+'</b><br>MD: md / md123 &middot; Checker: checker / checker123':'')+'</p></div>';
+}
+function render(){
+  const app=document.getElementById("app");
+  if(!db){app.innerHTML='<div class="loadmsg">Connecting...</div>';return}
+  if(!ME){app.innerHTML=loginView();return}
+  const emp=ME.role==="emp",un=NOTES.filter(n=>!n.read).length;
+  const qn=emp?0:APPTS.filter(a=>stOf(a)===(ME.role==="md"?"forwarded":"new")).length;
+  const tabs=emp?[["home","home","Home"],["appt","list","Appointments"],["me","user","Profile"]]:ME.role==="checker"?[["home","home","Home"],["cal","cal","Schedule"],["appt","list","Appointments"],["stats","chart","Insights"],["me","user","Profile"]]:[["home","home","Home"],["cal","cal","Schedule"],["appt","list","Appts"],["stats","chart","Insights"],["people","users","People"],["me","user","Profile"]];
+  const hr=new Date().getHours(),gr=hr<12?"Good morning":hr<17?"Good afternoon":"Good evening";
+  const titles={book:"Book an appointment",mine:"My requests",appt:"Appointments",me:"Profile",home:gr+", "+ME.name.split(" ")[0],cal:"Schedule",people:"Employees",stats:"Insights"};
+  let h='<div class="hero"><div class="hin"><div><small>'+(tab==="home"||tab==="book"?fd(today):ROLE[ME.role])+"</small><h1>"+esc(titles[tab])+'</h1></div><button class="ic" onclick="bellOpen()" aria-label="Notifications">'+ic("bell",21)+(un?"<b>"+un+"</b>":"")+'</button></div></div><main>';
+  h+=({book:bookView,mine:mineView,home:emp?empHome:ME.role==="checker"?()=>ctaBtn()+homeView():homeView,cal:calView,stats:statsView,appt:apptView,people:peopleView,me:meView})[tab]();
+  h+='</main><div class="nav"><div>'+tabs.map(t=>'<button class="'+((tab===t[0]||(tab==="book"&&t[0]==="home"))?"on":"")+'" onclick="tab=\''+t[0]+'\';pwMsg=null;render();window.scrollTo(0,0)">'+ic(t[1],22)+t[2]+(t[0]==="home"&&qn?"<b>"+qn+"</b>":"")+"</button>").join("")+"</div></div>";
+  app.innerHTML=h;
+}
+(async()=>{
+  if(!LOCAL){try{const c=new AbortController(),t=setTimeout(()=>c.abort(),8000);const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({op:"user",username:"md"}),signal:c.signal});clearTimeout(t);const j=await r.json();if(j.error&&!/NOT_FOUND/.test(j.error))throw new Error(j.error)}catch(e){LOCAL=true;OFFREASON=e.message||"no response"}}
+  db=LOCAL?makeLocalDB():makeDB();if(LOCAL)await seedLocal();render();
+  let u=null;try{u=localStorage.getItem(SK)}catch(e){}
+  if(u){try{const a=await db.auth.user(u);if(a)return enter(a)}catch(e){}}
+  render();
+})();
+</script>
+</body>
+</html>
