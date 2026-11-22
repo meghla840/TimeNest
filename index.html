@@ -2,6 +2,14 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Timenest</title>
+<meta name="theme-color" content="#0a1f36">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Timenest">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
@@ -115,9 +123,29 @@ button.card{cursor:pointer}
 .hero{background:linear-gradient(140deg,var(--acc2),#1d4f7c)}
 .urg{background:#c0392b;color:#fff}.nxt{background:linear-gradient(140deg,var(--acc2),#1d4f7c);color:#fff;border-radius:18px;padding:16px;margin-bottom:12px}.nxt small{opacity:.8}
 .loadmsg{color:var(--mute);text-align:center;padding:40px}
+.instbar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:496px;margin:0 auto;z-index:50;background:var(--card);color:var(--ink);border-radius:18px;box-shadow:0 12px 36px rgba(10,31,54,.28);padding:12px 12px 12px 14px;display:none;gap:10px;align-items:center;border:1px solid var(--line)}
+.instbar.on{display:flex}.instbar img{width:40px;height:40px;border-radius:11px;flex:none}.instbar .t{flex:1;min-width:0;font-size:13px;line-height:1.35}.instbar .t b{display:block;font-size:14px}
+.instbar button{border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;background:var(--acc);color:var(--onacc)}.instbar button.x{background:none;color:var(--mute);padding:10px 8px}
 </style>
 </head>
 <body>
+<div class="instbar" id="instbar"><img src="icons/icon-192.png" alt=""><div class="t"><b>Install Timenest</b><span id="insttxt">Add to your home screen for one-tap access.</span></div><button id="instgo">Install</button><button class="x" id="instx" aria-label="Dismiss">&#10005;</button></div>
+<script>
+/* ===== PWA: installable app ===== */
+(function(){
+  var bar=document.getElementById("instbar"),go=document.getElementById("instgo"),x=document.getElementById("instx"),txt=document.getElementById("insttxt"),dp=null;
+  var standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  var dismissed=false;try{dismissed=localStorage.getItem("tn-inst-x")==="1"}catch(e){}
+  if("serviceWorker" in navigator&&location.protocol!=="file:")addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
+  if(standalone)return;
+  addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;if(!dismissed)bar.classList.add("on")});
+  addEventListener("appinstalled",function(){bar.classList.remove("on");dp=null});
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  if(ios&&!dismissed){txt.textContent="Tap Share, then \u201cAdd to Home Screen\u201d.";go.style.display="none";bar.classList.add("on")}
+  go.onclick=function(){if(!dp)return;dp.prompt();dp.userChoice.finally(function(){dp=null;bar.classList.remove("on")})};
+  x.onclick=function(){bar.classList.remove("on");try{localStorage.setItem("tn-inst-x","1")}catch(e){}};
+})();
+</script>
 <div id="app">
 
 </div>
