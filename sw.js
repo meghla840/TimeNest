@@ -1,5 +1,5 @@
 /* Timenest service worker — app shell cache. API calls (Apps Script POST) are never cached. */
-const CACHE = "timenest-v1";
+const CACHE = "timenest-v2";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png"];
 
